@@ -6,31 +6,31 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("movies")
+@RequestMapping("/v1/movies")
 class MovieController(val movieService: MovieService) {
 
 
     @GetMapping
     fun findAll(): List<MovieDto> {
-        return movieService.findAll();
+        return movieService.findAll()
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun create(@RequestBody movie: MovieDto) {
+    fun create(@RequestBody movie: MovieDto): MovieDto {
         if (movie.stars.isEmpty()) {
-            throw IllegalArgumentException("There must be at least one entry in the stars list");
+            throw IllegalArgumentException("There must be at least one entry in the stars list")
         }
-        movieService.create(movie);
+        return movieService.create(movie)
     }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long) {
-        movieService.delete(id);
+        movieService.delete(id)
     }
 //
 //    @PutMapping
 //    fun index(@RequestParam("name") name: String): String {
-//        println("asdasd");
+//        println("asdasd")
 //        return "Hello, $name!"
 //    }
 }

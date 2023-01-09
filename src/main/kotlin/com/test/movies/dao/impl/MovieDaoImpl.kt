@@ -4,6 +4,7 @@ import com.test.movies.dao.MovieDao
 import com.test.movies.model.Movie
 import com.test.movies.repository.MovieRepository
 import com.test.movies.repository.StarRepository
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -11,6 +12,7 @@ import java.util.*
 class MovieDaoImpl(private val movieRepository: MovieRepository, private val starRepository: StarRepository) :
     MovieDao {
 
+    @Transactional
     override fun save(movie: Movie): Movie {
         movie.stars = movie.stars.map {
             this.starRepository.findByName(it.name) ?: it

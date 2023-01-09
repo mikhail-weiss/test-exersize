@@ -4,15 +4,13 @@ import com.test.movies.dao.MovieDao
 import com.test.movies.dao.impl.MovieDaoImpl
 import com.test.movies.model.Movie
 import com.test.movies.model.Star
-import com.test.movies.services.MovieService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.dao.DataIntegrityViolationException
 import java.time.LocalDate
 
 @DataJpaTest
@@ -25,7 +23,6 @@ class MovieRepositoryIntegrationTest(
     @Autowired
     val movieDao: MovieDao
 ) {
-
     @Test
     fun `saving a movie should save a movie`() {
         val expectedStars = { setOf(Star("star1"), Star("star2")) }
@@ -42,7 +39,7 @@ class MovieRepositoryIntegrationTest(
     fun `saving a movie should save new stars`() {
         val expectedStars = { setOf(Star("star1"), Star("star2")) }
         val movie = Movie("test title", LocalDate.now(), expectedStars())
-        val savedMovie = movieDao.save(movie)
+        movieDao.save(movie)
 
         val actualStars = starRepository.findAll().toSet()
 
@@ -68,4 +65,18 @@ class MovieRepositoryIntegrationTest(
         assertThat(actualStars[0].name, equalTo(expectedStars().toList()[0].name))
     }
 
+    @Test
+    fun `saving same movie twice should fail`() {
+        val expectedStars = { setOf(Star("star1"), Star("star2")) }
+        val movie = Movie("test title", LocalDate.now(), expectedStars())
+        val save1 = movieDao.save(movie)
+
+        try {
+            val save2 = movieDao.save(movie)
+            movieRepository.flush()
+            assertThat("Exception should have been thrown", false)
+        } catch(ex: DataIntegrityViolationException) {
+            //
+        }
+    }
 }

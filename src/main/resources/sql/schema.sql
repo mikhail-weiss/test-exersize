@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS movie
     title        VARCHAR(255) NOT NULL,
     release_date DATE
 );
+ALTER TABLE movie ADD CONSTRAINT uniquetitleandreleasedate UNIQUE(title, release_date);
 
 CREATE TABLE IF NOT EXISTS star
 (

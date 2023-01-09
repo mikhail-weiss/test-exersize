@@ -7,7 +7,7 @@ import java.time.LocalDate
 @Entity
 @Table(
     name = "movie",
-    uniqueConstraints = [UniqueConstraint(name = "UniqueNumberAndStatus", columnNames = ["title", "release_date"])]
+    uniqueConstraints = [UniqueConstraint(name = "UniqueTitleAndReleaseDate", columnNames = ["title", "release_date"])]
 )
 class Movie(
     @Column(nullable = false)
@@ -27,5 +27,5 @@ class Movie(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movie_seq")
     @SequenceGenerator(name = "movie_seq", sequenceName = "movie_seq", allocationSize = 1)
-    val id: Long? = null
+    var id: Long? = null
 }
