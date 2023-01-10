@@ -58,7 +58,7 @@ class MovieRepositoryIntegrationTest(
         assertThat(starRepository.findAll().size, equalTo(1))
         assertThat(actualStars[0].name, equalTo(expectedStars().toList()[0].name))
 
-        val savedMovie = movieDao.save(movie)
+        movieDao.save(movie)
 
         actualStars = starRepository.findAll()
         assertThat(actualStars.size, equalTo(1))
@@ -69,10 +69,10 @@ class MovieRepositoryIntegrationTest(
     fun `saving same movie twice should fail`() {
         val expectedStars = { setOf(Star("star1"), Star("star2")) }
         val movie = Movie("test title", LocalDate.now(), expectedStars())
-        val save1 = movieDao.save(movie)
+        movieDao.save(movie)
 
         try {
-            val save2 = movieDao.save(movie)
+            movieDao.save(movie)
             movieRepository.flush()
             assertThat("Exception should have been thrown", false)
         } catch(ex: DataIntegrityViolationException) {

@@ -30,6 +30,14 @@ class MovieDaoImpl(private val movieRepository: MovieRepository, private val sta
 
     override fun getById(id: Long): Optional<Movie> {
         return this.movieRepository.findById(id)
+    }
 
+     override fun truncateAll() {
+        this.movieRepository.deleteAll()
+        this.starRepository.deleteAll()
+    }
+
+    override fun exists(id: Long): Boolean {
+        return this.movieRepository.existsById(id)
     }
 }

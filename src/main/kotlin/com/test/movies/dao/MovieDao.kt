@@ -8,4 +8,10 @@ interface MovieDao {
     fun findAll(): MutableList<Movie>
     fun deleteById(id: Long)
     fun getById(id: Long): Optional<Movie>
+
+    /**
+     * Removes all data from every table
+     */
+    fun truncateAll()
+    fun exists(id: Long): Boolean
 }

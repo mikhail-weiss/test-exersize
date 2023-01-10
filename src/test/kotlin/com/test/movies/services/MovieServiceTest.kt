@@ -1,5 +1,6 @@
 package com.test.movies.services
 
+import com.test.movies.controllers.exceptions.MovieIsWrongException
 import com.test.movies.dao.MovieDao
 import com.test.movies.dto.MovieDto
 import com.test.movies.model.Movie
@@ -86,6 +87,118 @@ class MovieServiceTest {
         assertThat(actualDto.title, equalTo(title))
         assertThat(actualDto.releaseDate, equalTo(releaseDate))
         assertThat(actualDto.stars, equalTo(stars.map { Star(it) }.toSet()))
+    }
+
+    @Test
+    fun `validate movie should allow correct movie`() {
+        val movieService = MovieService(movieDao)
+        val movie = MovieDto(
+            title = "title",
+            releaseDate = LocalDate.of(2000, 1, 1),
+            stars = setOf("star1", "star2")
+        )
+
+        try {
+            movieService.validateMovie(movie)
+        } catch (e: Exception) {
+            fail(e.message)
+        }
+    }
+
+    @Test
+    fun `validate movie should fail movie with empty title`() {
+        val movieService = MovieService(movieDao)
+        val movie = MovieDto(
+            title = "",
+            releaseDate = LocalDate.of(2000, 1, 1),
+            stars = setOf("star1", "star2")
+        )
+
+        try {
+            movieService.validateMovie(movie)
+            fail("should fail movie with empty title")
+        } catch (_: Exception) {
+        }
+    }
+
+    @Test
+    fun `validate movie should fail movie with too long title`() {
+        val movieService = MovieService(movieDao)
+        val movie = MovieDto(
+            title = "a".repeat(255),
+            releaseDate = LocalDate.of(2000, 1, 1),
+            stars = setOf("star1", "star2")
+        )
+
+        try {
+            movieService.validateMovie(movie)
+            fail("should fail movie with too long title message")
+        } catch (_: Exception) {
+        }
+    }
+
+    @Test
+    fun `validate movie should fail movie without stars`() {
+        val movieService = MovieService(movieDao)
+        val movie = MovieDto(
+            title = "title",
+            releaseDate = LocalDate.of(2000, 1, 1),
+            stars = setOf()
+        )
+
+        try {
+            movieService.validateMovie(movie)
+            fail("should fail movie without star")
+        } catch (_: MovieIsWrongException) {
+        }
+    }
+
+    @Test
+    fun `validate movie should fail movie with too many stars`() {
+        val movieService = MovieService(movieDao)
+        val movie = MovieDto(
+            title = "title",
+            releaseDate = LocalDate.of(2000, 1, 1),
+            stars = List(101) { i -> "star$i" }.toSet()
+        )
+
+        try {
+            movieService.validateMovie(movie)
+            fail("should fail movie with too many stars")
+        } catch (_: MovieIsWrongException) {
+        }
+    }
+
+    @Test
+    fun `validate movie should fail movie when star name is too long`() {
+        val movieService = MovieService(movieDao)
+        val movie = MovieDto(
+            title = "title",
+            releaseDate = LocalDate.of(2000, 1, 1),
+            stars = setOf("a".repeat(255))
+        )
+
+        try {
+            movieService.validateMovie(movie)
+            fail("should fail movie when star name is too long")
+        } catch (_: MovieIsWrongException) {
+        }
+    }
+
+    @Test
+    fun `validate movie should fail movie when star name is empty`() {
+        val movieService = MovieService(movieDao)
+        val movie = MovieDto(
+            title = "title",
+            releaseDate = LocalDate.of(2000, 1, 1),
+            stars = setOf("")
+        )
+
+        try {
+            movieService.validateMovie(movie)
+            fail("should fail movie when star name is too long")
+        } catch (_: MovieIsWrongException) {
+        }
     }
 
 }

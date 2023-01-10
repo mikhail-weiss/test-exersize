@@ -1,17 +1,23 @@
+DROP TABLE IF EXISTS movie_star;
+DROP TABLE IF EXISTS star;
+DROP TABLE IF EXISTS movie;
+
+DROP SEQUENCE IF EXISTS movie_seq;
+DROP SEQUENCE IF EXISTS star_seq;
+
 CREATE TABLE IF NOT EXISTS movie
 (
     id           INTEGER PRIMARY KEY,
     title        VARCHAR(255) NOT NULL,
-    release_date DATE
+    release_date DATE,
+    CONSTRAINT uniquetitleandreleasedate UNIQUE(title, release_date)
 );
-ALTER TABLE movie ADD CONSTRAINT uniquetitleandreleasedate UNIQUE(title, release_date);
 
 CREATE TABLE IF NOT EXISTS star
 (
     name VARCHAR(255) NOT NULL UNIQUE,
     id   INTEGER PRIMARY KEY
 );
-
 
 CREATE TABLE IF NOT EXISTS movie_star
 (

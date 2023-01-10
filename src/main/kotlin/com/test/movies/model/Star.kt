@@ -1,11 +1,17 @@
 package com.test.movies.model
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
 
 @Entity
 @Table(name = "star")
 class Star(
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Name is mandatory")
+    @Max(100)
+    @Min(1)
     val name: String,
 ) {
     @Id
@@ -13,7 +19,7 @@ class Star(
     @SequenceGenerator(name = "star_seq", sequenceName = "star_seq", allocationSize = 1)
     val id: Long? = null
 
-    @ManyToMany(mappedBy = "stars", cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @ManyToMany(mappedBy = "stars")
     var movies: Set<Movie> = setOf()
 
     override fun equals(other: Any?): Boolean {
