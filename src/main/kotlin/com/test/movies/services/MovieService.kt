@@ -1,20 +1,20 @@
 package com.test.movies.services
 
-import com.test.movies.controllers.exceptions.MovieAlreadyExistsException
-import com.test.movies.controllers.exceptions.MovieIsWrongException
-import com.test.movies.controllers.exceptions.MovieNotFoundException
-import com.test.movies.dao.MovieDao
+import com.test.movies.services.exceptions.MovieAlreadyExistsException
+import com.test.movies.services.exceptions.MovieIsWrongException
+import com.test.movies.services.exceptions.MovieNotFoundException
 import com.test.movies.dto.MovieDto
 import com.test.movies.model.Movie
 import com.test.movies.model.Star
+import com.test.movies.repository.MovieRepository
+import com.test.movies.repository.StarRepository
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
-import kotlin.jvm.optionals.getOrNull
 
 @Service
-class MovieService(val dao: MovieDao) {
+class MovieService(private val movieRepository: MovieRepository) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     fun toDto(movie: Movie): MovieDto =
@@ -35,14 +35,16 @@ class MovieService(val dao: MovieDao) {
         }
 
     fun findAll(): List<MovieDto> {
-        return dao.findAll().map { toDto(it) }
+        return this.movieRepository.findAll().map { toDto(it) }
     }
 
-    fun create(movie: MovieDto): MovieDto {
-        validateMovie(movie)
+    fun create(movieDto: MovieDto): MovieDto {
+        validateMovie(movieDto)
 
         try {
-            return toDto(dao.save(fromDto(movie)))
+            val movie = fromDto(movieDto)
+
+            return toDto(movieRepository.saveFull(movie))
         } catch (e: DataIntegrityViolationException) {
             log.error("Error creating the movie", e)
 
@@ -63,7 +65,7 @@ class MovieService(val dao: MovieDao) {
             throw MovieIsWrongException("Star list is too big")
         }
 
-        movie.stars.forEach { validateStar(it)}
+        movie.stars.forEach { validateStar(it) }
 
         if (movie.title.isEmpty()) {
             throw MovieIsWrongException("Title shouldn't be empty")
@@ -82,7 +84,7 @@ class MovieService(val dao: MovieDao) {
 
     fun delete(id: Long) {
         try {
-            dao.deleteById(id)
+            movieRepository.deleteById(id)
         } catch (e: EmptyResultDataAccessException) {
             log.error("Couldn't find an element to delete", e)
             throw MovieNotFoundException()
@@ -91,15 +93,14 @@ class MovieService(val dao: MovieDao) {
 
     fun update(id: Long, movie: MovieDto): MovieDto {
         validateMovie(movie)
-        if (!dao.exists(id)) {
+        if (!movieRepository.existsById(id)) {
             throw MovieNotFoundException()
         }
-        return toDto(dao.save(fromDto(movie.copy(id = id))))
+        return toDto(movieRepository.saveFull(fromDto(movie.copy(id = id))))
     }
 
     fun findById(id: Long): MovieDto {
-        val movieOptional = this.dao.getById(id)
+        val movieOptional = this.movieRepository.findById(id)
         return toDto(movieOptional.orElseThrow { MovieNotFoundException() })
-
     }
 }

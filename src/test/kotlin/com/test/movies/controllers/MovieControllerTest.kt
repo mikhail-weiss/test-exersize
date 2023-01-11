@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 
 @WebMvcTest(MovieController::class)
-class MovieControllerIntegrationTest {
+class MovieControllerTest {
 
     @TestConfiguration
     class ControllerTestConfig {
@@ -42,8 +42,7 @@ class MovieControllerIntegrationTest {
 
     @Test
     fun `get should return json array`() {
-
-        val movie = MovieDto("movie1", LocalDate.now(), stars = setOf());
+        val movie = MovieDto("movie1", LocalDate.now(), stars = setOf())
 
         every { service.findAll() } returns listOf(movie)
 
@@ -59,8 +58,7 @@ class MovieControllerIntegrationTest {
 
     @Test
     fun `post should create and then return created movie with an id`() {
-
-        val movie = MovieDto("movie1", LocalDate.now(), stars = setOf("star1"));
+        val movie = MovieDto("movie1", LocalDate.now(), stars = setOf("star1"))
 
         every { service.findAll() } returns listOf(movie)
         every { service.create(any()) } returns movie.copy(id = 1)
@@ -77,13 +75,12 @@ class MovieControllerIntegrationTest {
     @Test
     fun `post should fail with 400 if no stars provided`() {
 
-        val movie = MovieDto("movie1", LocalDate.now(), stars = setOf());
+        val movie = MovieDto("movie1", LocalDate.now(), stars = setOf())
 
         every { service.findAll() } returns listOf(movie)
         every { service.create(any()) } returns movie.copy(id = 1)
 
         val thrown = assertThrows<jakarta.servlet.ServletException> {
-
             mvc.perform(
                 post("/v1/movies")
                     .content(objectMapper.writeValueAsString(movie))

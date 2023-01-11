@@ -4,8 +4,6 @@ import com.test.movies.dto.MovieDto
 import com.test.movies.services.MovieService
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.validation.FieldError
-import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -39,19 +37,19 @@ class MovieController(val movieService: MovieService) {
         return movieService.update(id, movie)
     }
 
-    //TODO: maybe that's better validation
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationExceptions(ex: MethodArgumentNotValidException): Map<String, String> {
-        val errors = mutableMapOf<String, String>()
-        ex.bindingResult.allErrors.forEach { error ->
-            val fieldName: String? = error?.objectName
-            val errorMessage = error.defaultMessage;
-            if (fieldName != null && errorMessage != null) {
-                errors[fieldName] = errorMessage;
-            }
-        }
-        return errors;
-    }
+//    //TODO: maybe that's better validation
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(MethodArgumentNotValidException::class)
+//    fun handleValidationExceptions(ex: MethodArgumentNotValidException): Map<String, String> {
+//        val errors = mutableMapOf<String, String>()
+//        ex.bindingResult.allErrors.forEach { error ->
+//            val fieldName: String? = error?.objectName
+//            val errorMessage = error.defaultMessage;
+//            if (fieldName != null && errorMessage != null) {
+//                errors[fieldName] = errorMessage;
+//            }
+//        }
+//        return errors;
+//    }
 
 }
