@@ -46,7 +46,7 @@ or just
 
 `docker build -t movies . && docker run -p 8080:8080 -it movies`
 
-Open http://localhost:8080/swagger-ui
+Open http://localhost:8080/swagger-ui/index.html
 
 ## Unit Test
 
