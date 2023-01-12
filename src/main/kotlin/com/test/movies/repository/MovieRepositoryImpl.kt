@@ -8,6 +8,7 @@ open class MovieRepositoryImpl(
     @Lazy private val movieRepository: MovieRepository,
     private val starRepository: StarRepository
 ) : MovieRepositoryCustom {
+
     @Transactional
     override fun saveFull(movie: Movie): Movie {
         movie.stars = movie.stars.map {

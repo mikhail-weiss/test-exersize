@@ -2,7 +2,6 @@ package com.test.movies.repository
 
 import com.test.movies.model.Movie
 import com.test.movies.model.Star
-import com.test.movies.services.MovieService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasSize
@@ -10,18 +9,18 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import java.time.LocalDate
 
 @DataJpaTest
-@Import(MovieService::class)
-class MovieRepositoryIntegrationTest(
+//@Import(value = [StarRepository::class, MovieRepository::class])
+class MovieRepositoryIntegrationTest {
     @Autowired
-    val starRepository: StarRepository,
+    lateinit var starRepository: StarRepository
+
     @Autowired
-    val movieRepository: MovieRepository
-) {
+    lateinit var movieRepository: MovieRepository
+
     @Test
     fun `saving a movie should save a movie`() {
         val expectedStars = { setOf(Star("star1"), Star("star2")) }

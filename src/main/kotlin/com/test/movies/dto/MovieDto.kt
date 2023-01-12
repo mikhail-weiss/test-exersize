@@ -9,8 +9,8 @@ data class MovieDto(
     @NotEmpty
     val title: String,
     val releaseDate: LocalDate,
-    val id: Long? = null,
     @Min(1)
     @Max(100)
     val stars: Set<String> = setOf(),
+    val id: Long? = null,
 )
